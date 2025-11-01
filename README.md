@@ -19,7 +19,7 @@ This extension is compatible with GNOME Shell versions:
 
 This can be installed from the GNOME extensions webpage:
 
-https://extensions.gnome.org/extension/66131/vlan-controller/
+https://extensions.gnome.org/extension/8762/vlan-controller/
 
 #### From source code
 
