@@ -64,13 +64,16 @@ const VlanManager = GObject.registerClass(
 
         // Queue a refresh using a debounce timer
         _queueRefresh() {
+            // FIX 1: Use GLib.source_remove() directly
             if (this._refreshTimeoutId)
-                GLib.Mainloop.source_remove(this._refreshTimeoutId);
+                GLib.source_remove(this._refreshTimeoutId);
 
-            this._refreshTimeoutId = GLib.Mainloop.timeout_add(100, () => {
+            // FIX 1: Use GLib.timeout_add() directly
+            this._refreshTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
                 this._refreshTimeoutId = null;
                 this._refresh();
-                return GLib.Mainloop.SOURCE_REMOVE;
+                // FIX 1: Use GLib.SOURCE_REMOVE directly
+                return GLib.SOURCE_REMOVE;
             });
         }
 
@@ -150,8 +153,8 @@ const VlanManager = GObject.registerClass(
                     try {
                         client.deactivate_connection_finish(result);
                     } catch (e) {
-                        // FIX: Replaced 'logError(e)' with 'log(e.message)'
-                        log(e.message); 
+                        // FIX 2: Use console.error() for logging
+                        console.error(e.message); 
                         Main.notify("VLAN Deactivation Failed", e.message);
                         this._queueRefresh();
                     }
@@ -161,8 +164,8 @@ const VlanManager = GObject.registerClass(
                     try {
                         client.activate_connection_finish(result);
                     } catch (e) {
-                        // FIX: Replaced 'logError(e)' with 'log(e.message)'
-                        log(e.message); 
+                        // FIX 2: Use console.error() for logging
+                        console.error(e.message); 
                         Main.notify("VLAN Activation Failed", e.message);
                         this._queueRefresh();
                     }
@@ -175,8 +178,9 @@ const VlanManager = GObject.registerClass(
             this._signalIds.forEach(id => this._client.disconnect(id));
             this._signalIds = [];
 
+            // FIX 1: Use GLib.source_remove() directly
             if (this._refreshTimeoutId)
-                GLib.Mainloop.source_remove(this._refreshTimeoutId);
+                GLib.source_remove(this._refreshTimeoutId);
 
             if (this.container) {
                 this.container.destroy();
