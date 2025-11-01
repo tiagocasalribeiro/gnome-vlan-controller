@@ -5,13 +5,8 @@ import St from 'gi://St'; // We need St for the Icon
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'; // This is the panel button
-import * as Util from 'resource:///org/gnome/shell/misc/util.js';
-
-// We import gettext for use in the VlanManager class,
-// as `this._()` is not available until the main class is instantiated.
-import { gettext as _ } from 'gettext';
+import * as popupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as panelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'; // This is the panel button
 
 // Responsible to create the Panel icon and menu
 const VlanManager = GObject.registerClass(
@@ -39,7 +34,7 @@ const VlanManager = GObject.registerClass(
         // Create the VLAN Indicator on the system panel
         _createContainer() {
             // 1. Create a Panel Button
-            this.container = new PanelMenu.Button(0.0, _('VLAN Indicator'));
+            this.container = new panelMenu.Button(0.0, 'VLAN Indicator');
             
             // 2. Add an icon to the button
             let icon = new St.Icon({
@@ -94,17 +89,17 @@ const VlanManager = GObject.registerClass(
                 .sort((a, b) => collator.compare(a.get_id(), b.get_id()));
 
             if (vlans.length < 1) {
-                this.menu.addMenuItem(new PopupMenu.PopupMenuItem(_("No VLAN found")));
+                this.menu.addMenuItem(new popupMenu.PopupMenuItem("No VLAN found"));
             } else {
                 vlans.forEach((vlan) => {
                     this._add_item(vlan, active_vlans.get(vlan.get_uuid()));
                 });
             }
 
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            let settingsItem = new PopupMenu.PopupMenuItem(_("Advanced Network Settings…"));
+            this.menu.addMenuItem(new popupMenu.PopupSeparatorMenuItem());
+            let settingsItem = new popupMenu.PopupMenuItem("Advanced Network Settings…");
             settingsItem.connect('activate', () => {
-                Util.spawn(['nm-connection-editor']);
+                GLib.spawn_command_line_async('nm-connection-editor');
                 this.menu.close(); // Close the menu
             });
             this.menu.addMenuItem(settingsItem);
@@ -119,10 +114,10 @@ const VlanManager = GObject.registerClass(
                               state === NM.ActiveConnectionState.DEACTIVATING);
     
             const isSensitive = (state === null ||
-                                 state === NM.ActiveConnectionState.ACTIVATED ||
-                                 state === NM.ActiveConnectionState.DEACTIVATED);
+                                   state === NM.ActiveConnectionState.ACTIVATED ||
+                                   state === NM.ActiveConnectionState.DEACTIVATED);
 
-            let switch_item = new PopupMenu.PopupSwitchMenuItem(vlan.get_id(), isActive);
+            let switch_item = new popupMenu.PopupSwitchMenuItem(vlan.get_id(), isActive);
             switch_item.setSensitive(isSensitive);
             switch_item.setStatus(this._get_status(active_vlan));
             this.menu.addMenuItem(switch_item);
@@ -140,9 +135,9 @@ const VlanManager = GObject.registerClass(
                 case NM.ActiveConnectionState.ACTIVATED:
                     return null;
                 case NM.ActiveConnectionState.ACTIVATING:
-                    return _("connecting…");
+                    return "connecting…";
                 case NM.ActiveConnectionState.DEACTIVATING:
-                    return _("disconnecting…");
+                    return "disconnecting…";
                 default:
                     return null;
             }
@@ -155,8 +150,9 @@ const VlanManager = GObject.registerClass(
                     try {
                         client.deactivate_connection_finish(result);
                     } catch (e) {
-                        logError(e); // Simplified error logging
-                        Main.notify(_("VLAN Deactivation Failed"), e.message);
+                        // FIX: Replaced 'logError(e)' with 'log(e.message)'
+                        log(e.message); 
+                        Main.notify("VLAN Deactivation Failed", e.message);
                         this._queueRefresh();
                     }
                 });
@@ -165,8 +161,9 @@ const VlanManager = GObject.registerClass(
                     try {
                         client.activate_connection_finish(result);
                     } catch (e) {
-                        logError(e); // Simplified error logging
-                        Main.notify(_("VLAN Activation Failed"), e.message);
+                        // FIX: Replaced 'logError(e)' with 'log(e.message)'
+                        log(e.message); 
+                        Main.notify("VLAN Activation Failed", e.message);
                         this._queueRefresh();
                     }
                 });
@@ -195,7 +192,6 @@ export default class VlanIndicatorExtension extends Extension {
 
     constructor(metadata) {
         super(metadata);
-        this.initTranslations();
     }
 
     enable() {
