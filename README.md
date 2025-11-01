@@ -9,10 +9,6 @@
 ## Compatibility
 
 This extension is compatible with GNOME Shell versions:
-- 3.36
-- 3.38
-- 40
-- 42
 - **48** (Latest)
 
 ## Installation
