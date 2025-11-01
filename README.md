@@ -3,7 +3,7 @@
 ### A GNOME extension to activate and deactivate VLAN connections from the top panel.
 
 <p align="center">
-    <img src="./vlan-controller.jpg" alt="VLAN Controller">
+    <img src="./vlan-controller.png" alt="VLAN Controller">
 </p>
 
 ## Compatibility
