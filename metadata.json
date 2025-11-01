@@ -1,0 +1,15 @@
+{
+    "uuid": "vlan-controller@tiagocasalribeiro.github.io",
+    "name": "VLAN controller",
+    "description": "Activate and deactivate VLAN connections from the top panel.",
+    "version": 1,
+    "shell-version": [ 
+        "3.36",
+        "3.38",
+        "40",
+        "42",
+        "48"
+    ],
+    "url": "https://github.com/tiagocasalribeiro/gnome-vlan-controller",
+    "type": "module"
+}
